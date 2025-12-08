@@ -6,6 +6,20 @@ The format is based on [Keep a Changelog], and this project adheres to [Semantic
 
 ## [Unreleased]
 
+## [0.3.3] (2025-12-08)
+
+### Added
+
+- Adds SharePoint system path exclusion to filter out internal paths like `_api`, `_catalogs`, `_layouts`, `_vti_bin`, and `Style Library` from file analysis operations.
+
+### Changed
+
+- Improves file operation output readability by consolidating timestamp and file count display on the same line for summary views.
+
+### Fixed
+
+- Fixes bulk operations key mapping to resolve mass deletion issues by replacing dynamic key construction with explicit mapping.
+
 ## [0.3.2] (2025-09-16)
 
 ### Changed
@@ -66,7 +80,8 @@ Initial release.
 [Semantic Versioning]: https://semver.org/spec/v2.0.0.html
 
 <!-- Versions -->
-[unreleased]: https://github.com/dannystewart/purviewer/compare/v0.3.2...HEAD
+[unreleased]: https://github.com/dannystewart/purviewer/compare/v0.3.3...HEAD
+[0.3.3]: https://github.com/dannystewart/purviewer/compare/v0.3.2...v0.3.3
 [0.3.2]: https://github.com/dannystewart/purviewer/compare/v0.3.1...v0.3.2
 [0.3.1]: https://github.com/dannystewart/purviewer/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/dannystewart/purviewer/compare/v0.2.1...v0.3.0
