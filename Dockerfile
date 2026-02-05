@@ -1,4 +1,4 @@
-# Dockerfile for Purviewer Web Application
+# Dockerfile for purrrr Web Application
 FROM python:3.13-slim
 
 # Set working directory

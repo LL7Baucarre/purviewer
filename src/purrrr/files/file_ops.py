@@ -14,14 +14,14 @@ from polykit.text import color
 from polykit.text import print_color as printc
 from tabulate import tabulate
 
-from purviewer.tools import AuditAnalyzer
+from purrrr.tools import AuditAnalyzer
 
 if TYPE_CHECKING:
     import numpy as np
     import pandas as pd
     from pandas import DataFrame
 
-    from purviewer.users import UserActions
+    from purrrr.users import UserActions
 
 
 @dataclass

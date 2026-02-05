@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING, Any, cast
 
 from polykit.text import print_color as printc
 
-from purviewer.tools import AuditAnalyzer
+from purrrr.tools import AuditAnalyzer
 
 if TYPE_CHECKING:
     from collections.abc import Sequence

@@ -18,12 +18,12 @@ from polykit import PolyLog, Text
 from polykit.cli import PolyArgs
 from polykit.text import color, print_color
 
-from purviewer.entra import EntraSignInOperations
-from purviewer.exchange import ExchangeOperations
-from purviewer.files import FileOperations
-from purviewer.network import NetworkOperations
-from purviewer.tools import AuditConfig, OutputFormatter
-from purviewer.users import UserActions
+from purrrr.entra import EntraSignInOperations
+from purrrr.exchange import ExchangeOperations
+from purrrr.files import FileOperations
+from purrrr.network import NetworkOperations
+from purrrr.tools import AuditConfig, OutputFormatter, JSONOutputFormatter
+from purrrr.users import UserActions
 
 if TYPE_CHECKING:
     import argparse
@@ -174,6 +174,14 @@ def parse_arguments() -> argparse.Namespace:
         type=int,
         help="limit rows shown for each sign-in column",
         metavar="MAX_ROWS",
+    )
+
+    # Output format options
+    output_group = parser.add_argument_group("OUTPUT FORMAT")
+    output_group.add_argument(
+        "--text",
+        action="store_true",
+        help="output results as formatted text instead of JSON (default is JSON)",
     )
 
     args = parser.parse_args()
@@ -517,10 +525,17 @@ def main() -> None:
     # Parse command-line arguments
     args = parse_arguments()
 
+    # Select output formatter based on arguments (default is JSON)
+    if args.text:
+        out_formatter = out
+    else:
+        out_formatter = JSONOutputFormatter(config, logger)
+
     config.user_mapping = users.create_user_mapping(args.user_map)
 
     log_file = Path(args.log_csv)
-    print(color("Using log file: ", "green") + str(log_file))
+    if args.text:
+        print(color("Using log file: ", "green") + str(log_file))
 
     # Handle Entra sign-in analysis early, before trying to process as SharePoint audit log
     if args.entra:

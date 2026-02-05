@@ -87,10 +87,10 @@
 
 ```bash
 # Analyze all file operations from a Purview audit log
-purviewer audit_log.csv
+purrrr audit_log.csv
 
 # Analyze Entra ID sign-in data
-purviewer signin_data.csv --entra
+purrrr signin_data.csv --entra
 ```
 
 ### Common Workflows
@@ -99,46 +99,46 @@ purviewer signin_data.csv --entra
 
 ```bash
 # Look for suspicious bulk downloads
-purviewer audit_log.csv --actions "FileDownloaded" --details
+purrrr audit_log.csv --actions "FileDownloaded" --details
 
 # Analyze IP addresses with geolocation
-purviewer audit_log.csv --do-ip-lookups
+purrrr audit_log.csv --do-ip-lookups
 
 # Check specific user's activity
-purviewer audit_log.csv --user "john.doe@company.com" --timeline
+purrrr audit_log.csv --user "john.doe@company.com" --timeline
 ```
 
 #### File Discovery
 
 ```bash
 # Find files containing sensitive keywords
-purviewer audit_log.csv --list-actions-for-files "confidential"
+purrrr audit_log.csv --list-actions-for-files "confidential"
 
 # Export all accessed file URLs
-purviewer audit_log.csv --full-urls
+purrrr audit_log.csv --full-urls
 ```
 
 #### Exchange Analysis
 
 ```bash
 # Focus on email activity only
-purviewer audit_log.csv --exchange
+purrrr audit_log.csv --exchange
 
 # Export Exchange data for further analysis
-purviewer audit_log.csv --export-exchange-csv email_activity.csv
+purrrr audit_log.csv --export-exchange-csv email_activity.csv
 ```
 
 #### Sign-in Analysis
 
 ```bash
 # Filter sign-ins by specific criteria
-purviewer signin_data.csv --entra --filter "admin" --exclude "success"
+purrrr signin_data.csv --entra --filter "admin" --exclude "success"
 ```
 
 ## Installation
 
 ```bash
-pip install purviewer
+pip install purrrr
 ```
 
 ## Requirements
@@ -153,6 +153,6 @@ The tool automatically detects SharePoint domains and email domains from your au
 
 ## License
 
-Purviewer is released under the MIT License. See the LICENSE file for details.
+purrrr is released under the MIT License. See the LICENSE file for details.
 
 """  # noqa: D212, D415, W505

@@ -13,7 +13,7 @@ from pandas import DataFrame
 from polykit.text import print_color as printc
 from tabulate import tabulate
 
-from purviewer.tools import AuditAnalyzer
+from purrrr.tools import AuditAnalyzer
 
 if TYPE_CHECKING:
     from pandas import DataFrame

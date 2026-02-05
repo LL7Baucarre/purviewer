@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any
 
@@ -186,3 +187,48 @@ class OutputFormatter:
             print(color("Filtering results to: ", "yellow") + f"{filtered_start} to {filtered_end}")
         else:
             print(color("Date range: ", "green") + f"{start_date} to {end_date}")
+
+
+@dataclass
+class JSONOutputFormatter:
+    """Format output as JSON for programmatic consumption."""
+
+    config: AuditConfig
+    logger: Logger
+
+    def to_json(self, data: dict[str, Any], indent: int | None = 2) -> str:
+        """Convert data to JSON string."""
+        return json.dumps(data, indent=indent, default=str)
+
+    def to_dict(self, data: Any) -> dict[str, Any]:
+        """Return data as dictionary."""
+        if isinstance(data, dict):
+            return data
+        return {"data": data}
+
+    def print_json(self, data: dict[str, Any], indent: int | None = 2) -> None:
+        """Print data as formatted JSON."""
+        print(self.to_json(data, indent))
+
+    def get_date_range(self, df: DataFrame, filtered_df: DataFrame | None = None) -> dict[str, Any]:
+        """Get date range as dictionary."""
+        start_date = df["CreationDate"].min().strftime("%Y-%m-%d")
+        end_date = df["CreationDate"].max().strftime("%Y-%m-%d")
+
+        result = {
+            "original_range": {
+                "start": start_date,
+                "end": end_date
+            }
+        }
+
+        if filtered_df is not None and not filtered_df.empty:
+            filtered_start = filtered_df["CreationDate"].min().strftime("%Y-%m-%d")
+            filtered_end = filtered_df["CreationDate"].max().strftime("%Y-%m-%d")
+            result["filtered_range"] = {
+                "start": filtered_start,
+                "end": filtered_end
+            }
+
+        return result
+

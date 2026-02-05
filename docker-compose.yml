@@ -4,7 +4,7 @@ services:
   # Redis service for session and file cache management
   redis:
     image: redis:7-alpine
-    container_name: purviewer-redis
+    container_name: purrrr-redis
     ports:
       - "6379:6379"
     volumes:
@@ -22,26 +22,26 @@ services:
       retries: 3
       start_period: 5s
     networks:
-      - purviewer-network
+      - purrrr-network
     restart: unless-stopped
 
-  # Purviewer Flask web application
+  # purrrr Flask web application
   web:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: purviewer-web
+    container_name: purrrr-web
     ports:
       - "5000:5000"
     environment:
       - FLASK_ENV=production
       - REDIS_URL=redis://redis:6379/0
-      - UPLOAD_FOLDER=/tmp/purviewer
+      - UPLOAD_FOLDER=/tmp/purrrr
       - MAX_FILE_SIZE=500
       - SECRET_KEY=your-super-secret-key-change-in-production
     volumes:
       - ./logs:/app/logs
-      - purviewer_temp:/tmp/purviewer
+      - purrrr_temp:/tmp/purrrr
     depends_on:
       redis:
         condition: service_healthy
@@ -52,15 +52,15 @@ services:
       retries: 3
       start_period: 10s
     networks:
-      - purviewer-network
+      - purrrr-network
     restart: unless-stopped
 
 volumes:
   redis_data:
     driver: local
-  purviewer_temp:
+  purrrr_temp:
     driver: local
 
 networks:
-  purviewer-network:
+  purrrr-network:
     driver: bridge

@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 """
-Purviewer Web Interface Launcher
-Démarre l'interface web Flask de Purviewer
+purrrr Web Interface Launcher
+Démarre l'interface web Flask de purrrr
 """
 
 import sys
@@ -13,13 +13,13 @@ from pathlib import Path
 src_path = Path(__file__).parent / "src"
 sys.path.insert(0, str(src_path))
 
-from purviewer.flask_app import run_flask_app
+from purrrr.flask_app import run_flask_app
 
 if __name__ == "__main__":
     import argparse
     
     parser = argparse.ArgumentParser(
-        description="Lance l'interface web Purviewer",
+        description="Lance l'interface web purrrr",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Exemples:
@@ -53,7 +53,7 @@ Exemples:
     
     
     print("=" * 50)
-    print("PURVIEWER WEB INTERFACE")
+    print("purrrr WEB INTERFACE")
     print("Analyseur de Logs Microsoft Purview")
     print("=" * 50)
     print()

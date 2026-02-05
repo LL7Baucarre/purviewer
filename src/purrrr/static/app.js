@@ -1,4 +1,4 @@
-// Purviewer Application JavaScript
+// purrrr Application JavaScript
 
 // Global variables
 let currentSessionId = null;

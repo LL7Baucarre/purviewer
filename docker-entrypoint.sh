@@ -2,7 +2,7 @@
 set -e
 
 echo "==========================="
-echo "Purviewer Web Application"
+echo "purrrr Web Application"
 echo "==========================="
 
 # Wait for Redis to be ready
@@ -38,8 +38,8 @@ else
 fi
 
 # Create upload directory
-mkdir -p /tmp/purviewer
-chmod 755 /tmp/purviewer
+mkdir -p /tmp/purrrr
+chmod 755 /tmp/purrrr
 
 echo ""
 echo "🚀 Starting Flask application..."

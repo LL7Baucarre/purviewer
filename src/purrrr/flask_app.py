@@ -1,4 +1,4 @@
-"""Flask web interface for Purviewer audit log analyzer."""
+"""Flask web interface for purrrr audit log analyzer."""
 
 from __future__ import annotations
 
@@ -21,7 +21,7 @@ try:
 except ImportError:
     REDIS_AVAILABLE = False
 
-from purviewer.tools import AuditConfig
+from purrrr.tools import AuditConfig
 
 if TYPE_CHECKING:
     from pandas import DataFrame
