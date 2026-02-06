@@ -47,6 +47,8 @@ app.config["SESSION_COOKIE_SECURE"] = False
 app.config["SESSION_COOKIE_HTTPONLY"] = True
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(hours=24)
+# Disable Jinja2 template caching for development
+app.jinja_env.cache = None
 
 # Configure Redis session if available
 redis_url = os.getenv("REDIS_URL", "redis://localhost:6379/0")
@@ -107,7 +109,9 @@ sessions: dict[str, AnalysisSession] = {}
 @app.route("/")
 def index() -> str:
     """Render home page."""
-    return render_template("index.html")
+    import time
+    # Force reload test
+    return render_template("index.html", cache_bust=int(time.time()))
 
 
 @app.route("/api/upload", methods=["POST"])

@@ -447,8 +447,17 @@ function showLogDetails(detail) {
     // Stocker pour les fonctions de recherche
     window.currentAuditData = auditData;
     
-    // Mettre à jour le titre
-    document.getElementById('modal-operation-type').textContent = auditData.Operation || '-';
+    // Mettre à jour la banner d'infos rapides
+    const statusBadge = auditData.ResultStatus === 'Succeeded' 
+        ? '<span class="badge bg-success">✓ Succès</span>'
+        : auditData.ResultStatus === 'Failed'
+        ? '<span class="badge bg-danger">✗ Échec</span>'
+        : '<span class="badge bg-secondary">' + (auditData.ResultStatus || '-') + '</span>';
+    
+    document.getElementById('quick-operation').textContent = auditData.Operation || '-';
+    document.getElementById('quick-user').textContent = auditData.UserId || '-';
+    document.getElementById('quick-date').textContent = formatDate(auditData.CreationTime) || '-';
+    document.getElementById('quick-status').innerHTML = statusBadge;
     
     // Onglet Infos
     renderInfosTab(auditData);
@@ -480,12 +489,9 @@ function renderInfosTab(auditData) {
     }
     
     const infosHtml = `
-        <div class="json-section">
-            <div class="json-section-header" onclick="toggleSection(this)">
-                <span><i class="fas fa-chevron-down me-2"></i>Informations Principales</span>
-                <i class="fas fa-angle-down"></i>
-            </div>
-            <div class="json-section-content show">
+        <div class="info-section">
+            <h6 class="info-section-title">Informations Principales</h6>
+            <div class="info-section-content">
                 <div class="json-item">
                     <span class="json-key">Date:</span>
                     <span class="json-value">${formatDate(auditData.CreationTime)}</span>
@@ -551,12 +557,9 @@ function renderRuleDetails(auditData) {
     });
     
     const ruleHtml = `
-        <div class="json-section mt-3">
-            <div class="json-section-header" onclick="toggleSection(this)">
-                <span><i class="fas fa-chevron-down me-2"></i>Détails de la Règle</span>
-                <i class="fas fa-angle-down"></i>
-            </div>
-            <div class="json-section-content show">
+        <div class="info-section mt-3">
+            <h6 class="info-section-title">Détails de la Règle</h6>
+            <div class="info-section-content">
                 ${parameters.Name ? `
                 <div class="json-item">
                     <span class="json-key">Nom de la règle:</span>
@@ -648,25 +651,28 @@ function renderUpdateDetails(auditData) {
     const modifiedProps = auditData.ModifiedProperties || [];
     
     return `
-        <div class="json-section mt-3">
-            <div class="json-section-header" onclick="toggleSection(this)">
-                <span><i class="fas fa-chevron-down me-2"></i>Détails de la Mise à Jour</span>
-                <i class="fas fa-angle-down"></i>
-            </div>
-            <div class="json-section-content show">
+        <div class="info-section mt-3">
+            <h6 class="info-section-title">Détails de la Mise à Jour</h6>
+            <div class="info-section-content">
                 ${item.Subject ? `
-                    <span class="json-value"><strong>"${item.Subject}"</strong></span>
-                </div>
+                    <div class="json-item">
+                        <span class="json-key">Sujet:</span>
+                        <span class="json-value"><strong>"${item.Subject}"</strong></span>
+                    </div>
                 ` : ''}
                 
                 ${item.ParentFolder?.Path ? `
-                    <span class="json-value"><code>${item.ParentFolder.Path.replace(/\\\\/g, '/')}</code></span>
-                </div>
+                    <div class="json-item">
+                        <span class="json-key">Dossier:</span>
+                        <span class="json-value"><code>${item.ParentFolder.Path.replace(/\\\\/g, '/')}</code></span>
+                    </div>
                 ` : ''}
                 
                 ${item.SizeInBytes ? `
-                    <span class="json-value">${Math.round(item.SizeInBytes / 1024)} KB</span>
-                </div>
+                    <div class="json-item">
+                        <span class="json-key">Taille:</span>
+                        <span class="json-value">${Math.round(item.SizeInBytes / 1024)} KB</span>
+                    </div>
                 ` : ''}
                 
                 ${modifiedProps.length > 0 ? `
@@ -681,8 +687,9 @@ function renderUpdateDetails(auditData) {
                             'Body': 'Corps du message'
                         };
                         return `
-                            <span class="json-value badge bg-warning text-dark">${propLabels[prop] || prop}</span>
-                        </div>
+                            <span class="json-item">
+                                <span class="json-value badge bg-warning text-dark">${propLabels[prop] || prop}</span>
+                            </span>
                         `;
                     }).join('')}
                 </div>
@@ -705,28 +712,29 @@ function renderMailAccessDetails(auditData) {
     };
     
     return `
-        <div class="json-section mt-3">
-            <div class="json-section-header" onclick="toggleSection(this)">
-                <span><i class="fas fa-chevron-down me-2"></i>Détails d'Accès aux Messages</span>
-                <i class="fas fa-angle-down"></i>
-            </div>
-            <div class="json-section-content show">
+        <div class="info-section mt-3">
+            <h6 class="info-section-title">Détails d'Accès aux Messages</h6>
+            <div class="info-section-content">
+                <div class="json-item">
+                    <span class="json-key">Type d'Accès:</span>
                     <span class="json-value badge bg-info">${accessTypeLabels[accessType] || accessType}</span>
                 </div>
                 
                 ${folders.length > 0 ? `
-                <div class="json-subsection mt-3">
-                    <h6 class="text-primary"><i class="fas fa-folder me-2"></i>Dossiers Consultés (${folders.length})</h6>
+                <div class="mt-3">
+                    <h6 class="text-primary mb-2"><i class="fas fa-folder me-2"></i>Dossiers Consultés (${folders.length})</h6>
                     ${folders.slice(0, 5).map(folder => `
-                        <span class="json-value">${folder.FolderItems?.length || 0} élément(s)</span>
+                        <div class="json-item">
+                            <span class="json-key">Dossier:</span>
+                            <span class="json-value">${folder.FolderItems?.length || 0} élément(s)</span>
+                        </div>
                         ${folder.FolderItems?.slice(0, 2).map(item => `
                             <div class="ms-3 mt-1">
                                 <small class="text-muted">"${item.Subject || 'Sans sujet'}"</small>
                             </div>
                         `).join('') || ''}
-                    </div>
                     `).join('')}
-                    ${folders.length > 5 ? `<div class="text-muted"><em>... et ${folders.length - 5} autres dossiers</em></div>` : ''}
+                    ${folders.length > 5 ? `<div class="text-muted mt-2"><em>... et ${folders.length - 5} autres dossiers</em></div>` : ''}
                 </div>
                 ` : ''}
             </div>
@@ -741,21 +749,24 @@ function renderMoveDetails(auditData) {
     const destFolder = auditData.DestFolder?.Path?.replace(/\\\\/g, '/');
     
     return `
-        <div class="json-section mt-3">
-            <div class="json-section-header" onclick="toggleSection(this)">
-                <span><i class="fas fa-chevron-down me-2"></i>Détails de Suppression</span>
-                <i class="fas fa-angle-down"></i>
-            </div>
-            <div class="json-section-content show">
+        <div class="info-section mt-3">
+            <h6 class="info-section-title">Détails de Suppression</h6>
+            <div class="info-section-content">
+                <div class="json-item">
+                    <span class="json-key">Éléments Affectés:</span>
                     <span class="json-value badge bg-danger">${affectedItems.length}</span>
                 </div>
                 
                 ${sourceFolder ? `
+                <div class="json-item">
+                    <span class="json-key">Dossier Source:</span>
                     <span class="json-value"><code>${sourceFolder}</code></span>
                 </div>
                 ` : ''}
                 
                 ${destFolder ? `
+                <div class="json-item">
+                    <span class="json-key">Dossier Destination:</span>
                     <span class="json-value"><code>${destFolder}</code></span>
                 </div>
                 ` : ''}
@@ -764,11 +775,13 @@ function renderMoveDetails(auditData) {
                 <div class="json-subsection mt-3">
                     <h6 class="text-danger"><i class="fas fa-trash me-2"></i>Éléments Supprimés</h6>
                     ${affectedItems.slice(0, 5).map(item => `
+                    <div class="json-item">
+                        <span class="json-key">Élément:</span>
                         <span class="json-value">"${item.Subject || 'Sans sujet'}"</span>
-                        ${item.InternetMessageId ? `<div class="ms-3"><small class="text-muted">ID: ${item.InternetMessageId}</small></div>` : ''}
                     </div>
+                    ${item.InternetMessageId ? `<div class="json-item ms-3"><small class="text-muted">ID: ${item.InternetMessageId}</small></div>` : ''}
                     `).join('')}
-                    ${affectedItems.length > 5 ? `<div class="text-muted"><em>... et ${affectedItems.length - 5} autres éléments</em></div>` : ''}
+                    ${affectedItems.length > 5 ? `<div class="text-muted mt-2"><em>... et ${affectedItems.length - 5} autres éléments</em></div>` : ''}
                 </div>
                 ` : ''}
             </div>
@@ -793,12 +806,9 @@ function renderGenericOperationDetails(operation, auditData) {
     const title = operationLabels[operation] || operation;
     
     return `
-        <div class="json-section mt-3">
-            <div class="json-section-header" onclick="toggleSection(this)">
-                <span><i class="fas fa-chevron-down me-2"></i>Détails de l'Opération: ${title}</span>
-                <i class="fas fa-angle-down"></i>
-            </div>
-            <div class="json-section-content show">
+        <div class="info-section mt-3">
+            <h6 class="info-section-title">Détails de l'Opération: ${title}</h6>
+            <div class="info-section-content">
                 ${item.Subject ? `
                 <div class="json-item">
                     <span class="json-key">Élément:</span>
@@ -839,12 +849,9 @@ function renderFoldersTab(auditData) {
     let foldersHtml = '';
     auditData.Folders.forEach((folder, idx) => {
         foldersHtml += `
-            <div class="json-section">
-                <div class="json-section-header" onclick="toggleSection(this)">
-                    <span><i class="fas fa-chevron-down me-2"></i>Dossier: ${folder.Path || 'N/A'}</span>
-                    <i class="fas fa-angle-down"></i>
-                </div>
-                <div class="json-section-content show">
+            <div class="info-section">
+                <h6 class="info-section-title">Dossier: ${folder.Path || 'N/A'}</h6>
+                <div class="info-section-content">
                     ${folder.FolderItems ? folder.FolderItems.map((item, itemIdx) => `
                         <div class="json-item" style="margin-bottom: 15px; border-left: 3px solid #6c757d;">
                             <div><span class="json-key">Sujet:</span> <span class="json-value">${item.Subject || 'N/A'}</span></div>
@@ -868,12 +875,9 @@ function renderItemsTab(auditData) {
     // AffectedItems (SoftDelete, HardDelete, etc.)
     if (auditData.AffectedItems && auditData.AffectedItems.length > 0) {
         itemsHtml += `
-            <div class="json-section">
-                <div class="json-section-header" onclick="toggleSection(this)">
-                    <span><i class="fas fa-chevron-down me-2"></i>Éléments Affectés (${auditData.AffectedItems.length})</span>
-                    <i class="fas fa-angle-down"></i>
-                </div>
-                <div class="json-section-content show">
+            <div class="info-section">
+                <h6 class="info-section-title">Éléments Affectés (${auditData.AffectedItems.length})</h6>
+                <div class="info-section-content">
                     ${auditData.AffectedItems.map((item, idx) => `
                         <div class="json-item" style="border-left: 3px solid #dc3545;">
                             <div><span class="json-key">Sujet:</span> <span class="json-value">${item.Subject || 'N/A'}</span></div>
@@ -890,17 +894,13 @@ function renderItemsTab(auditData) {
     // Item (pour Send, etc.)
     if (auditData.Item) {
         itemsHtml += `
-            <div class="json-section">
-                <div class="json-section-header" onclick="toggleSection(this)">
-                    <span><i class="fas fa-chevron-down me-2"></i>Détails Item</span>
-                    <i class="fas fa-angle-down"></i>
-                </div>
-                <div class="json-section-content show">
-                        <div><span class="json-key">Sujet:</span> <span class="json-value">${auditData.Item.Subject || 'N/A'}</span></div>
-                        <div><span class="json-key">Taille:</span> <span class="json-value">${formatBytes(auditData.Item.SizeInBytes)}</span></div>
-                        <div><span class="json-key">Dossier Parent:</span> <span class="json-value">${auditData.Item.ParentFolder?.Path || 'N/A'}</span></div>
-                        <div><span class="json-key">Pièces jointes:</span> <span class="json-value">${auditData.Item.Attachments || 'Aucune'}</span></div>
-                    </div>
+            <div class="info-section">
+                <h6 class="info-section-title">Détails Item</h6>
+                <div class="info-section-content">
+                    <div><span class="json-key">Sujet:</span> <span class="json-value">${auditData.Item.Subject || 'N/A'}</span></div>
+                    <div><span class="json-key">Taille:</span> <span class="json-value">${formatBytes(auditData.Item.SizeInBytes)}</span></div>
+                    <div><span class="json-key">Dossier Parent:</span> <span class="json-value">${auditData.Item.ParentFolder?.Path || 'N/A'}</span></div>
+                    <div><span class="json-key">Pièces jointes:</span> <span class="json-value">${auditData.Item.Attachments || 'Aucune'}</span></div>
                 </div>
             </div>
         `;
@@ -914,14 +914,6 @@ function renderItemsTab(auditData) {
 }
 
 // Fonction pour basculer les sections expand/collapse
-function toggleSection(element) {
-    const content = element.nextElementSibling;
-    const icon = element.querySelector('i.fa-angle-down');
-    
-    content.classList.toggle('show');
-    icon.classList.toggle('expanded');
-}
-
 // Fonction de recherche dans le JSON
 function setupJsonSearch(auditData) {
     const searchInput = document.getElementById('json-search');

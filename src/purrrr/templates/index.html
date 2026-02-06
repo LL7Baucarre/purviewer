@@ -255,44 +255,60 @@
                 <div class="modal-header bg-primary text-white sticky-top">
                     <div>
                         <h5 class="modal-title" id="logDetailsLabel">
-                            <i class="fas fa-file-alt me-2"></i>Détails Complets du Log
+                            <i class="fas fa-file-alt me-2"></i>Détails du Log
+                            <!-- TEST MODIFICATION -->
                         </h5>
-                        <small class="text-light" id="modal-operation-type"></small>
                     </div>
-                    <div class="input-group input-group-sm ms-3" style="max-width: 250px;">
-                        <input type="text" class="form-control" id="json-search" placeholder="Rechercher...">
-                        <button class="btn btn-outline-light" type="button" id="search-clear">
-                            <i class="fas fa-times"></i>
-                        </button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <!-- Quick Info Banner -->
+                <div class="bg-light border-bottom px-4 py-3" id="quick-info-banner">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <div class="text-muted small">Opération</div>
+                            <div class="fw-bold text-truncate" id="quick-operation"></div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-muted small">Utilisateur</div>
+                            <div class="fw-bold text-truncate" id="quick-user"></div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-muted small">Date/Heure</div>
+                            <div class="fw-bold text-truncate" id="quick-date"></div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-muted small">Statut</div>
+                            <div class="fw-bold" id="quick-status"></div>
+                        </div>
                     </div>
-                    <button type="button" class="btn-close btn-close-white ms-3" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
                 <!-- Nav Tabs -->
-                <ul class="nav nav-tabs" id="logTabs" role="tablist">
+                <ul class="nav nav-tabs border-bottom" id="logTabs" role="tablist" style="background-color: #f9f9f9;">
                     <li class="nav-item" role="presentation">
                         <button class="nav-link active" id="infos-tab" data-bs-toggle="tab" data-bs-target="#infos-content" type="button">
-                            <i class="fas fa-info-circle"></i> Infos
+                            <i class="fas fa-info-circle me-2"></i>Informations Principales
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="folders-tab" data-bs-toggle="tab" data-bs-target="#folders-content" type="button">
-                            <i class="fas fa-folder"></i> Dossiers
+                            <i class="fas fa-folder me-2"></i>Dossiers
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="items-tab" data-bs-toggle="tab" data-bs-target="#items-content" type="button">
-                            <i class="fas fa-boxes"></i> Éléments
+                            <i class="fas fa-list me-2"></i>Éléments
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="complete-tab" data-bs-toggle="tab" data-bs-target="#complete-content" type="button">
-                            <i class="fas fa-code"></i> JSON Complet
+                            <i class="fas fa-code me-2"></i>JSON Complet
                         </button>
                     </li>
                 </ul>
 
-                <div class="modal-body tab-content" id="logTabContent">
+                <div class="modal-body tab-content" id="logTabContent" style="max-height: 70vh; overflow-y: auto;">
                     <!-- Infos Tab -->
                     <div class="tab-pane fade show active" id="infos-content" role="tabpanel">
                         <div id="infos-container"></div>
@@ -310,6 +326,12 @@
 
                     <!-- Complete JSON Tab -->
                     <div class="tab-pane fade" id="complete-content" role="tabpanel">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <input type="text" class="form-control" id="json-search" placeholder="Rechercher dans le JSON...">
+                            <button class="btn btn-outline-secondary btn-sm" type="button" id="search-clear">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
                         <pre id="json-complete" style="max-height: 600px; overflow-y: auto; background: #f5f5f5; padding: 15px; border-radius: 4px; font-size: 0.85rem;"></pre>
                     </div>
                 </div>

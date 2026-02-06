@@ -9,6 +9,8 @@ from __future__ import annotations
 import json
 import operator
 import re
+import sys
+from io import StringIO
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
@@ -30,6 +32,9 @@ if TYPE_CHECKING:
 
 # Set up the logger
 logger = PolyLog.get_logger(simple=True)
+
+# ANSI escape code pattern
+ANSI_ESCAPE = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
 
 # Load runtime config
 config = AuditConfig()
@@ -525,11 +530,27 @@ def main() -> None:
     # Parse command-line arguments
     args = parse_arguments()
 
+    # Redirect stdout if in JSON mode
+    original_stdout = sys.stdout
+    json_buffer = None
+    
     # Select output formatter based on arguments (default is JSON)
+    global out
     if args.text:
         out_formatter = out
     else:
+        # Redirect all print statements to buffer for JSON output
+        json_buffer = StringIO()
+        sys.stdout = json_buffer
+        
         out_formatter = JSONOutputFormatter(config, logger)
+        # Update all analyzers to use JSON formatter
+        out = out_formatter
+        users.out = out_formatter
+        network.out = out_formatter
+        files.out = out_formatter
+        exchange.out = out_formatter
+        entra.out = out_formatter
 
     config.user_mapping = users.create_user_mapping(args.user_map)
 
@@ -564,7 +585,11 @@ def main() -> None:
         df = df[df["CreationDate"] <= pd.to_datetime(args.end_date)]
 
     # Print the date range as well as any filtering that was applied
-    out.print_date_range(original_df, df if (args.start_date or args.end_date) else None)
+    if args.text:
+        out.print_date_range(original_df, df if (args.start_date or args.end_date) else None)
+    else:
+        date_range = out_formatter.get_date_range(original_df, df if (args.start_date or args.end_date) else None)
+        # Store for later JSON output if needed
 
     # Apply IP filtering if specified
     df = apply_ip_filtering(args, df)
@@ -598,6 +623,21 @@ def main() -> None:
     ]
 
     perform_data_analysis(args, file_actions, actions_to_analyze, exch_events)
+
+    # Restore stdout and output results
+    if not args.text:
+        sys.stdout = original_stdout
+        # Capture all text output and create final JSON
+        text_output = json_buffer.getvalue()
+        # Strip ANSI escape codes for clean JSON output
+        clean_output = ANSI_ESCAPE.sub('', text_output).strip()
+        # Split into lines for better JSON structure
+        output_lines = [line for line in clean_output.split('\n') if line.strip()]
+        output_json = {
+            "output": output_lines if output_lines else ["Analysis complete"],
+            "timestamp": pd.Timestamp.now().isoformat(),
+        }
+        print(json.dumps(output_json, indent=2, default=str, ensure_ascii=False))
 
 
 if __name__ == "__main__":

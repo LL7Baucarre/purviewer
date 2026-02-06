@@ -195,6 +195,7 @@ class JSONOutputFormatter:
 
     config: AuditConfig
     logger: Logger
+    _data: dict[str, Any] = field(default_factory=dict, init=False)
 
     def to_json(self, data: dict[str, Any], indent: int | None = 2) -> str:
         """Convert data to JSON string."""
@@ -209,6 +210,31 @@ class JSONOutputFormatter:
     def print_json(self, data: dict[str, Any], indent: int | None = 2) -> None:
         """Print data as formatted JSON."""
         print(self.to_json(data, indent))
+
+    def _add_section(self, section: str, content: Any) -> None:
+        """Add content to a section."""
+        if section not in self._data:
+            self._data[section] = content
+        else:
+            # If section exists, try to merge or append
+            if isinstance(self._data[section], dict) and isinstance(content, dict):
+                self._data[section].update(content)
+            elif isinstance(self._data[section], list) and isinstance(content, list):
+                self._data[section].extend(content)
+            else:
+                self._data[section] = content
+
+    def print_header(self, header: str, color: TextColor | None = None) -> None:
+        """Store header as section marker."""
+        self._add_section("_current_section", header)
+
+    def color_headers(self, headers: list[str], color_name: TextColor | None = None) -> list[str]:
+        """Return headers as-is for JSON formatter - no coloring."""
+        return headers
+
+    def print_date_range(self, df: DataFrame, filtered_df: DataFrame | None = None) -> None:
+        """No-op for JSON formatter - date ranges not printed."""
+        pass
 
     def get_date_range(self, df: DataFrame, filtered_df: DataFrame | None = None) -> dict[str, Any]:
         """Get date range as dictionary."""
@@ -231,4 +257,8 @@ class JSONOutputFormatter:
             }
 
         return result
+
+    def output(self) -> None:
+        """Print all accumulated data as JSON."""
+        print(self.to_json(self._data))
 
